@@ -12,10 +12,6 @@ ALTER_PROMPT = Alter_Archit_Prompt
 JUDGE_PROMPT = JudgePrompt
 
 
-# ==============================
-# Response Generator
-# ==============================
-
 def generate_response(system_prompt, topic, previous_response=None):
     messages = [{"role": "system", "content": system_prompt}]
 
@@ -47,11 +43,6 @@ Reply in 3-4 simple lines. Be clear and direct.
 
     return response.choices[0].message.content.strip()
 
-
-# ==============================
-# Judge
-# ==============================
-
 def judge_debate(topic, debate_log):
     transcript = "\n".join(debate_log)
 
@@ -82,18 +73,13 @@ Who won? Give short reason.
     return response.choices[0].message.content.strip()
 
 
-# ==============================
-# Debate Engine (Sequential Format)
-# ==============================
-
 def run_debate(topic, rounds):
     debate_log = []
     chat_history = []
     previous = None
 
     for round_number in range(1, rounds + 1):
-
-        # 🟢 Ego speaks
+        
         ego_reply = generate_response(EGO_PROMPT, topic, previous)
         debate_log.append(f"Ego: {ego_reply}")
 
@@ -105,8 +91,7 @@ def run_debate(topic, rounds):
         yield chat_history
 
         previous = ego_reply
-
-        # 🔴 Alter counters
+        
         alter_reply = generate_response(ALTER_PROMPT, topic, previous)
         debate_log.append(f"AlterEgo: {alter_reply}")
 
@@ -118,8 +103,7 @@ def run_debate(topic, rounds):
         yield chat_history
 
         previous = alter_reply
-
-    # 🧑‍⚖️ Judge
+    
     verdict = judge_debate(topic, debate_log)
 
     chat_history.append({
@@ -128,11 +112,6 @@ def run_debate(topic, rounds):
     })
 
     yield chat_history
-
-
-# ==============================
-# UI
-# ==============================
 
 with gr.Blocks() as demo:
 

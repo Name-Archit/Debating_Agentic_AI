@@ -92,6 +92,24 @@ def architEgo(term, word):
         Ego_responses = Ego_response_Debate.choices[0].message.content
         Debate.append({"role": "assistant", "content": Ego_responses})
 
+def Judgement(Debate):
+    judge_message = [
+        {"role": "system", "content": judge},
+        {"role": "user", "content": f"""Topic = {Topic},
+        responses = {Debate}
+        
+        In the list named as Debate all the even indexed responses are of Ego responses and all the odd ones
+        are of alterEgo responses according to the topic give your verdict who is correct Ego or alterEgo and 
+        also in simple and to the point reason why you think your choice is correct and other is wrong."""}
+    ]
+
+    JudgeResponse = groq.chat.completions.create(
+        model = "openai/gpt-oss-20b",
+        messages = judge_message
+    )
+
+    judgeResponses = JudgeResponse.choices[0].message.content
+    return judgeResponses
 
 print("How many round you want the debate to happen: ")
 n = int(input())
@@ -115,6 +133,6 @@ while n != 0 :
 
     n-=1
 
-
+console.print(Markdown(Judgement(Debate)))
 
 
